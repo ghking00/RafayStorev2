@@ -5,17 +5,15 @@
   box-sizing: border-box;
 }
 
-/* HTML and body */
 html, body {
   height: 100%;
   width: 100%;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: white;
-  position: relative;
-  z-index: 1;
+  background: #0a0a0a;
 }
 
-/* Full-screen fixed background using ::before */
+/* Fixed Premium Background */
 body::before {
   content: "";
   position: fixed;
@@ -23,78 +21,77 @@ body::before {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('https://i.postimg.cc/pdjM3ZpB/IMG-20250731-WA0227.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: url('https://i.postimg.cc/pdjM3ZpB/IMG-20250731-WA0227.jpg') no-repeat center center/cover;
   z-index: -1;
+  filter: brightness(0.4);
 }
 
-/* Container box */
+/* Main Container */
 .container {
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.8);
   border-radius: 20px;
-  padding: 20px;
-  max-width: 600px;
-  margin: 20px auto;
-  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+  padding: 25px;
+  max-width: 650px;
+  margin: 30px auto;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
 }
 
-/* Header */
+/* Logo + Heading */
 header {
   text-align: center;
   margin-bottom: 20px;
 }
 
 .logo {
-  width: 40px;
+  width: 50px;
   height: auto;
   margin: 10px auto;
   display: block;
 }
 
 h1 {
-  font-size: 28px;
+  font-size: 30px;
   color: #00ffcc;
   font-weight: bold;
+  text-shadow: 0 0 5px #00ffcc80;
 }
 
-.contact-number,
-.developer-info {
-  font-size: 13px;
+/* Disclaimer */
+.disclaimer {
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #00ffcc;
+  padding: 12px;
+  font-size: 12px;
   color: #ccc;
-  margin-top: 6px;
+  margin-bottom: 20px;
+  border-radius: 8px;
 }
 
-/* Section headers */
-section {
-  margin-bottom: 25px;
-}
-
+/* Section Headers */
 h2 {
-  border-bottom: 2px solid #00ffcc;
-  padding-bottom: 5px;
-  margin-bottom: 12px;
   color: #00ffcc;
   font-size: 20px;
+  margin: 20px 0 10px;
+  border-bottom: 1px solid #00ffcc;
+  padding-bottom: 6px;
 }
 
-/* List styling */
+/* List Styles */
 ul {
   list-style: none;
-  padding-left: 0;
+  padding: 0;
 }
 
 li {
   display: flex;
   justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px solid #444;
+  padding: 8px 0;
+  border-bottom: 1px dashed #333;
 }
 
 li span {
-  font-weight: bold;
   color: #fff;
+  font-weight: 600;
 }
 
 li b {
@@ -104,24 +101,7 @@ li b {
 /* Footer */
 footer {
   text-align: center;
-  margin-top: 40px;
-  padding-top: 10px;
-  font-size: 12px;
+  font-size: 13px;
   color: #aaa;
-}
-
-/* WhatsApp contact line */
-.contact-line {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-
-.contact-line img {
-  width: 18px;
-  height: 18px;
-  vertical-align: middle;
+  margin-top: 40px;
 }
