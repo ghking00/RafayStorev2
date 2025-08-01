@@ -1,0 +1,127 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* HTML and body */
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: 'Arial', sans-serif;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+/* Full-screen fixed background using ::before */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('https://i.postimg.cc/pdjM3ZpB/IMG-20250731-WA0227.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+/* Container box */
+.container {
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 40px;
+  height: auto;
+  margin: 10px auto;
+  display: block;
+}
+
+h1 {
+  font-size: 28px;
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+.contact-number,
+.developer-info {
+  font-size: 13px;
+  color: #ccc;
+  margin-top: 6px;
+}
+
+/* Section headers */
+section {
+  margin-bottom: 25px;
+}
+
+h2 {
+  border-bottom: 2px solid #00ffcc;
+  padding-bottom: 5px;
+  margin-bottom: 12px;
+  color: #00ffcc;
+  font-size: 20px;
+}
+
+/* List styling */
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #444;
+}
+
+li span {
+  font-weight: bold;
+  color: #fff;
+}
+
+li b {
+  color: #00ffcc;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 10px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+/* WhatsApp contact line */
+.contact-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.contact-line img {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
