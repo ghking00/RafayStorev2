@@ -1,14 +1,85 @@
-// script.js - Rafay Subscription Store (premium message)
-// - Add-to-cart (supports .add-btn or inline addToCart(name, price))
-// - Quantity controls & cart total
-// - Sends premium WhatsApp order message (2nd / "more premium" version)
+// script.js - Rafay Subscription Store (premium + animation edition)
 
 const cart = [];
 const cartList = document.getElementById("cart-items");
 const totalDisplay = document.getElementById("cart-total");
 const orderBtn = document.getElementById("order-btn");
 
-// Add item (callable from HTML inline or JS)
+// ---------- LUXURY VISUALS SECTION (new) ----------
+document.addEventListener("DOMContentLoaded", () => {
+  // Background fireworks canvas
+  const canvas = document.createElement("canvas");
+  canvas.id = "fireworks";
+  Object.assign(canvas.style, {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    zIndex: "-1",
+    pointerEvents: "none",
+    background: "transparent"
+  });
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  let fireworks = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  class Firework {
+    constructor(x, y, color) {
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.radius = 2;
+      this.alpha = 1;
+      this.particles = Array.from({ length: 25 }, () => ({
+        x: x,
+        y: y,
+        angle: Math.random() * 2 * Math.PI,
+        speed: Math.random() * 4 + 1,
+        alpha: 1
+      }));
+    }
+    draw() {
+      this.particles.forEach(p => {
+        p.x += Math.cos(p.angle) * p.speed;
+        p.y += Math.sin(p.angle) * p.speed + 0.5;
+        p.alpha -= 0.02;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color}, ${p.alpha})`;
+        ctx.fill();
+      });
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    fireworks.forEach((f, i) => {
+      f.draw();
+      if (f.particles.every(p => p.alpha <= 0)) fireworks.splice(i, 1);
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Random fireworks every few seconds
+  setInterval(() => {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height * 0.5;
+    const color = `255, ${Math.floor(Math.random() * 150 + 100)}, 0`; // gold tone
+    fireworks.push(new Firework(x, y, color));
+  }, 2000);
+});
+
+// ---------- CART LOGIC SECTION (your original) ----------
+
 function addToCart(name, price) {
   const existing = cart.find(item => item.name === name);
   if (existing) {
@@ -17,9 +88,9 @@ function addToCart(name, price) {
     cart.push({ name, price: Number(price), quantity: 1 });
   }
   updateCart();
+  sparkleEffect(); // ✨ add visual sparkle when adding item
 }
 
-// Attach to all .add-btn buttons (if using data-name/data-price structure)
 document.querySelectorAll(".add-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const parent = btn.closest(".product");
@@ -40,7 +111,7 @@ function updateCart() {
 
     const li = document.createElement("li");
     li.innerHTML = `
-      <span>${item.name}</span>
+      <span class="fade-in">${item.name}</span>
       <div class="quantity-controls">
         <button onclick="changeQuantity(${index}, -1)">−</button>
         <span>${item.quantity}</span>
@@ -60,7 +131,6 @@ function changeQuantity(index, change) {
   updateCart();
 }
 
-// Build premium message and send via WhatsApp
 if (orderBtn) {
   orderBtn.addEventListener("click", () => {
     if (cart.length === 0) {
@@ -76,12 +146,11 @@ if (orderBtn) {
       total += item.price * item.quantity;
     });
 
-    // Premium message (the "more premium" version you approved)
     const message = [
       "💎✨ 𝗥𝗮𝗳𝗮𝘆 𝗦𝘂𝗯𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻 𝗦𝘁𝗼𝗿𝗲 — 𝗢𝗿𝗱𝗲𝗿 𝗗𝗲𝘁𝗮𝗶𝗹𝘀 🛍️ ✨💎",
       "─────────────────────────────",
       "🧾 Your Selected Items:",
-      ...lines.map(l => l),
+      ...lines,
       "─────────────────────────────",
       `💰 Total Amount: ₨ ${total}`,
       "─────────────────────────────",
@@ -106,14 +175,31 @@ if (orderBtn) {
     ].join("\n");
 
     const encoded = encodeURIComponent(message);
-    const whatsappNumber = "923313943049"; // confirmed WhatsApp order number
+    const whatsappNumber = "923313943049";
     const waUrl = `https://wa.me/${whatsappNumber}?text=${encoded}`;
-
     window.open(waUrl, "_blank");
   });
 }
 
-// expose for inline/on-page use
+// ✨ Small sparkle animation on add
+function sparkleEffect() {
+  const sparkle = document.createElement("div");
+  sparkle.className = "sparkle";
+  sparkle.innerHTML = "✨";
+  Object.assign(sparkle.style, {
+    position: "fixed",
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    fontSize: "20px",
+    animation: "fadeSparkle 1s ease-out forwards",
+    pointerEvents: "none",
+    color: "gold"
+  });
+  document.body.appendChild(sparkle);
+  setTimeout(() => sparkle.remove(), 1000);
+}
+
+// expose
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.updateCart = updateCart;
