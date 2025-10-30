@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Audio element for Welcome Voice -->
-  <audio id="welcomeAudio" src="assets/welcome.mp3" preload="auto"></audio>
+  <!-- Hidden welcome audio -->
+  <audio id="welcome-audio" src="assets/welcome.mp3" preload="auto"></audio>
 
   <div class="container">
     <header>
@@ -113,26 +113,20 @@
     <button id="order-btn">Order on WhatsApp</button>
   </div>
 
-  <!-- Welcome Audio Script -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const audio = document.getElementById("welcomeAudio");
-      const played = localStorage.getItem("welcomePlayed");
+  <script src="script.js"></script>
 
-      if (!played) {
-        // wait for first click or scroll (browser restriction)
-        const playOnce = () => {
-          audio.play().catch(() => {});
-          localStorage.setItem("welcomePlayed", "true");
-          document.removeEventListener("click", playOnce);
-          document.removeEventListener("scroll", playOnce);
-        };
-        document.addEventListener("click", playOnce);
-        document.addEventListener("scroll", playOnce);
+  <!-- Welcome audio autoplay script -->
+  <script>
+    window.addEventListener("load", () => {
+      const audio = document.getElementById("welcome-audio");
+      if (!sessionStorage.getItem("playedWelcome")) {
+        audio.play().catch(() => {
+          // Fallback: auto play on first click if browser blocks it
+          document.body.addEventListener("click", () => audio.play(), { once: true });
+        });
+        sessionStorage.setItem("playedWelcome", "true");
       }
     });
   </script>
-
-  <script src="script.js"></script>
 </body>
 </html>
