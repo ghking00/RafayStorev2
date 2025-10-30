@@ -56,41 +56,38 @@ header {
   animation: slideDown 1s ease;
 }
 
-/* --- Social Icons (Top Left & Right of Logo) --- */
-.social-left, .social-right {
-  position: absolute;
-  top: 15px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 215, 0, 0.15);
+/* --- Social Icons Top --- */
+.social-links {
   display: flex;
-  align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
-  border: 1px solid #ffd70055;
-  transition: 0.3s;
-  z-index: 10;
+  gap: 20px;
+  margin-top: 15px;
 }
 
-.social-left:hover, .social-right:hover {
-  background: linear-gradient(45deg, #ffd700, #ff8c00);
+.social-links a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  font-weight: bold;
+}
+
+.social-links a img {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-links a img:hover {
   transform: scale(1.1);
+  box-shadow: 0 0 15px #ffd700a8;
 }
 
-.social-left {
-  left: 25px;
-}
-
-.social-right {
-  right: 25px;
-}
-
-.social-left img,
-.social-right img {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+.social-links a span {
+  margin-top: 5px;
+  font-size: 14px;
 }
 
 /* --- Logo & Title --- */
@@ -277,14 +274,8 @@ footer {
 
 /* 📱 Responsive */
 @media (max-width: 600px) {
-  .social-left {
-    left: 15px;
-    top: 10px;
-  }
-
-  .social-right {
-    right: 15px;
-    top: 10px;
+  .social-links {
+    gap: 12px;
   }
 
   .logo {
@@ -293,5 +284,16 @@ footer {
 
   h1 {
     font-size: 1.8em;
+  }
+
+  .products {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .cart {
+    width: 90%;
+    right: 5%;
+    bottom: 10px;
+    padding: 15px;
   }
 }
