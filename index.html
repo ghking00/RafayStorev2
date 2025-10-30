@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Audio element for Welcome Voice -->
+  <audio id="welcomeAudio" src="assets/welcome.mp3" preload="auto"></audio>
+
   <div class="container">
     <header>
       <img src="assets/background.jpg" alt="Logo" class="logo" />
@@ -109,6 +112,26 @@
     <div class="total">Total: <span id="cart-total">0</span> rs</div>
     <button id="order-btn">Order on WhatsApp</button>
   </div>
+
+  <!-- Welcome Audio Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const audio = document.getElementById("welcomeAudio");
+      const played = localStorage.getItem("welcomePlayed");
+
+      if (!played) {
+        // wait for first click or scroll (browser restriction)
+        const playOnce = () => {
+          audio.play().catch(() => {});
+          localStorage.setItem("welcomePlayed", "true");
+          document.removeEventListener("click", playOnce);
+          document.removeEventListener("scroll", playOnce);
+        };
+        document.addEventListener("click", playOnce);
+        document.addEventListener("scroll", playOnce);
+      }
+    });
+  </script>
 
   <script src="script.js"></script>
 </body>
