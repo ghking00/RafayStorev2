@@ -13,6 +13,14 @@
       gap: 20px;
       margin-top: 15px;
     }
+    .social-links a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      font-weight: bold;
+    }
     .social-links a img {
       width: 50px;
       height: 50px;
@@ -22,6 +30,10 @@
     .social-links a img:hover {
       transform: scale(1.1);
       box-shadow: 0 0 15px #ffd700a8;
+    }
+    .social-links a span {
+      margin-top: 5px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -35,13 +47,15 @@
       <h1>Rafay Subscription Store</h1>
       <p class="subtitle">Premium Digital Services & Subscriptions</p>
 
-      <!-- Instagram & WhatsApp Buttons -->
+      <!-- WhatsApp & Instagram Buttons -->
       <div class="social-links">
+        <a href="https://wa.me/923313943049?text=Hello%20Rafay%20Sir!%20I%20am%20from%20your%20site.%20I%20want%20info%20about%20your%20services%20😊✨" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+          <span>Contact on WhatsApp</span>
+        </a>
         <a href="https://www.instagram.com/rafay_subscription?igsh=MWhzaDU0ZW5oZ3pzcg==" target="_blank">
           <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" />
-        </a>
-        <a href="https://wa.me/923313943049?text=Hello%20Rafay%20Sir,%20I'm%20from%20your%20site.%20I%20want%20info%20about%20your%20services%20%E2%9C%8A%F0%9F%98%8A" target="_blank">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+          <span>Follow on Instagram</span>
         </a>
       </div>
     </header>
