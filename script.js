@@ -1,33 +1,37 @@
 // script.js - Rafay Subscription Store (premium + animation edition + welcome voice)
 
-// 🎧 Auto-play welcome voice once per website open
+// 🎧 Auto-play welcome voice with smooth fade-in (once per session)
 document.addEventListener("DOMContentLoaded", () => {
-  const audio = document.getElementById("welcomeAudio");
-  if (audio && !sessionStorage.getItem("welcomePlayed")) {
+  if (!sessionStorage.getItem("welcomePlayed")) {
+    const audio = new Audio("assets/welcome.mp3");
+    audio.volume = 0;
     const playAudio = () => {
-      audio.play().catch(() => {});
-      sessionStorage.setItem("welcomePlayed", "true");
+      audio.play().then(() => {
+        sessionStorage.setItem("welcomePlayed", "true");
+        let vol = 0;
+        const fade = setInterval(() => {
+          vol += 0.05;
+          if (vol >= 1) {
+            vol = 1;
+            clearInterval(fade);
+          }
+          audio.volume = vol;
+        }, 100);
+      }).catch(() => {});
     };
 
-    // Try autoplay
-    const attempt = audio.play();
-    if (attempt !== undefined) {
-      attempt
-        .then(() => {
-          sessionStorage.setItem("welcomePlayed", "true");
-        })
-        .catch(() => {
-          document.body.addEventListener("click", playAudio, { once: true });
-        });
-    } else {
+    // Try autoplay instantly
+    audio.play().then(() => {
+      sessionStorage.setItem("welcomePlayed", "true");
+    }).catch(() => {
+      // If blocked, start after first click
       document.body.addEventListener("click", playAudio, { once: true });
-    }
+    });
   }
 });
 
 // ---------- LUXURY VISUALS SECTION ----------
 document.addEventListener("DOMContentLoaded", () => {
-  // Background fireworks canvas
   const canvas = document.createElement("canvas");
   canvas.id = "fireworks";
   Object.assign(canvas.style, {
@@ -36,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     left: 0,
     width: "100%",
     height: "100%",
-    zIndex: "-2", // ✅ lower so it never affects layout
+    zIndex: "-2",
     pointerEvents: "none",
     background: "transparent"
   });
@@ -58,11 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
       this.color = color;
       this.radius = 2;
       this.alpha = 1;
-      this.particles = Array.from({ length: 30 }, () => ({
+      this.particles = Array.from({ length: 40 }, () => ({
         x: x,
         y: y,
         angle: Math.random() * 2 * Math.PI,
-        speed: Math.random() * 4 + 1,
+        speed: Math.random() * 5 + 1,
         alpha: 1
       }));
     }
@@ -89,13 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   animate();
 
-  // Random fireworks
+  // ✨ More visible random fireworks (luxury gold)
   setInterval(() => {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height * 0.6;
-    const color = `${255}, ${Math.floor(Math.random() * 160 + 80)}, 0`; // gold
+    const color = `${255}, ${Math.floor(Math.random() * 180 + 70)}, 50`;
     fireworks.push(new Firework(x, y, color));
-  }, 1500);
+  }, 900);
 });
 
 // ---------- CART LOGIC ----------
@@ -116,8 +120,8 @@ document.querySelectorAll(".add-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const parent = btn.closest(".product");
     if (!parent) return;
-    const name = parent.dataset.name || parent.getAttribute("data-name") || parent.querySelector("h3")?.innerText || "Item";
-    const price = parseInt(parent.dataset.price || parent.getAttribute("data-price") || 0, 10) || 0;
+    const name = parent.dataset.name || parent.querySelector("h3")?.innerText || "Item";
+    const price = parseInt(parent.dataset.price || 0, 10) || 0;
     addToCart(name, price);
   });
 });
@@ -211,16 +215,15 @@ function sparkleEffect() {
     position: "fixed",
     left: `${Math.random() * 100}%`,
     top: `${Math.random() * 100}%`,
-    fontSize: "20px",
-    animation: "fadeSparkle 1s ease-out forwards",
+    fontSize: "22px",
+    animation: "fadeSparkle 1.3s ease-out forwards",
     pointerEvents: "none",
     color: "gold"
   });
   document.body.appendChild(sparkle);
-  setTimeout(() => sparkle.remove(), 1000);
+  setTimeout(() => sparkle.remove(), 1300);
 }
 
-// expose
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.updateCart = updateCart;
