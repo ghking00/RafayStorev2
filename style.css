@@ -1,214 +1,237 @@
-// script.js - Rafay Subscription Store (Premium Visible Fireworks Edition)
-
-const cart = [];
-const cartList = document.getElementById("cart-items");
-const totalDisplay = document.getElementById("cart-total");
-const orderBtn = document.getElementById("order-btn");
-
-// ---------- LUXURY VISUALS SECTION (improved fireworks) ----------
-document.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.createElement("canvas");
-  canvas.id = "fireworks";
-  Object.assign(canvas.style, {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    zIndex: "-1",
-    pointerEvents: "none",
-    background: "transparent",
-  });
-  document.body.appendChild(canvas);
-
-  const ctx = canvas.getContext("2d");
-  let fireworks = [];
-
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener("resize", resize);
-  resize();
-
-  class Firework {
-    constructor(x, y, color) {
-      this.x = x;
-      this.y = y;
-      this.color = color;
-      this.radius = 3.5; // bigger spark size
-      this.particles = Array.from({ length: 40 }, () => ({
-        x: x,
-        y: y,
-        angle: Math.random() * 2 * Math.PI,
-        speed: Math.random() * 5 + 1,
-        alpha: 1,
-      }));
-    }
-    draw() {
-      this.particles.forEach((p) => {
-        p.x += Math.cos(p.angle) * p.speed;
-        p.y += Math.sin(p.angle) * p.speed + 0.2;
-        p.alpha -= 0.01; // slower fade for visibility
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${this.color}, ${p.alpha})`;
-        ctx.fill();
-      });
-    }
-  }
-
-  function animate() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.15)"; // trail effect
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    fireworks.forEach((f, i) => {
-      f.draw();
-      if (f.particles.every((p) => p.alpha <= 0)) fireworks.splice(i, 1);
-    });
-    requestAnimationFrame(animate);
-  }
-  animate();
-
-  // Random fireworks (more frequent & bright)
-  setInterval(() => {
-    for (let i = 0; i < 2; i++) {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height * 0.5;
-      const goldShade = 200 + Math.floor(Math.random() * 55);
-      const color = `${goldShade}, ${goldShade - 50}, 0`;
-      fireworks.push(new Firework(x, y, color));
-    }
-  }, 1500);
-});
-
-// ---------- CART LOGIC SECTION ----------
-function addToCart(name, price) {
-  const existing = cart.find((item) => item.name === name);
-  if (existing) {
-    existing.quantity++;
-  } else {
-    cart.push({ name, price: Number(price), quantity: 1 });
-  }
-  updateCart();
-  sparkleEffect(); // ✨ visual sparkle when adding item
+/* --- RESET & BASE --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-document.querySelectorAll(".add-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const parent = btn.closest(".product");
-    if (!parent) return;
-    const name =
-      parent.dataset.name ||
-      parent.getAttribute("data-name") ||
-      parent.querySelector("h3")?.innerText ||
-      "Item";
-    const price =
-      parseInt(
-        parent.dataset.price || parent.getAttribute("data-price") || 0,
-        10
-      ) || 0;
-    addToCart(name, price);
-  });
-});
-
-function updateCart() {
-  if (!cartList) return;
-  cartList.innerHTML = "";
-  let total = 0;
-
-  cart.forEach((item, index) => {
-    total += item.price * item.quantity;
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span class="fade-in">${item.name}</span>
-      <div class="quantity-controls">
-        <button onclick="changeQuantity(${index}, -1)">−</button>
-        <span>${item.quantity}</span>
-        <button onclick="changeQuantity(${index}, 1)">+</button>
-      </div>
-    `;
-    cartList.appendChild(li);
-  });
-
-  if (totalDisplay) totalDisplay.textContent = total;
+body {
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at top left, #00141f 0%, #000 60%, #000 100%);
+  color: #fff;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
-function changeQuantity(index, change) {
-  if (!cart[index]) return;
-  cart[index].quantity += change;
-  if (cart[index].quantity <= 0) cart.splice(index, 1);
-  updateCart();
+/* --- BACKGROUND EFFECT --- */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('https://i.postimg.cc/pdjM3ZpB/IMG-20250731-WA0227.jpg') center/cover no-repeat;
+  filter: brightness(0.45) blur(3px);
+  z-index: -2;
 }
 
-if (orderBtn) {
-  orderBtn.addEventListener("click", () => {
-    if (cart.length === 0) {
-      alert("Please add at least one item to your cart.");
-      return;
-    }
-
-    let total = 0;
-    let lines = [];
-
-    cart.forEach((item, i) => {
-      lines.push(`${i + 1}️⃣ ${item.name} — ${item.price} Rs × ${item.quantity}`);
-      total += item.price * item.quantity;
-    });
-
-    const message = [
-      "💎✨ 𝗥𝗮𝗳𝗮𝘆 𝗦𝘂𝗯𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻 𝗦𝘁𝗼𝗿𝗲 — 𝗢𝗿𝗱𝗲𝗿 𝗗𝗲𝘁𝗮𝗶𝗹𝘀 🛍️ ✨💎",
-      "─────────────────────────────",
-      "🧾 Your Selected Items:",
-      ...lines,
-      "─────────────────────────────",
-      `💰 Total Amount: ₨ ${total}`,
-      "─────────────────────────────",
-      "",
-      "🌟 💳 Secure Payment Options 💳",
-      "👤 Account Title: Abdul Rafeh",
-      "",
-      "💠 Easypaisa: 0314 8396100 — Abdul Rafeh",
-      "💠 SadaPay: 0314 8396100 — Abdul Rafeh",
-      "💠 U Paisa: 0301 3555251 — Abdul Rafeh",
-      "💠 NayaPay: 0339 0116375 — Abdul Rafeh",
-      "💠 JazzCash: 0339 0116375 — Abdul Rafeh",
-      "💠 Zindagi: 0314 8396100 — Abdul Rafeh",
-      "",
-      "⚠️ Please send your payment screenshot after deposit for instant order activation.",
-      "─────────────────────────────",
-      "💻✨ For Premium Website Development:",
-      "📞 Contact: 0314-1495075",
-      "👩‍💻 Amna Rajpoot — Professional Developer & Ethical Hacker",
-      "─────────────────────────────",
-      "🚀 Thank you for choosing Rafay Subscription Store! We deliver trusted, fast, and secure services — always 💯✨",
-    ].join("\n");
-
-    const encoded = encodeURIComponent(message);
-    const whatsappNumber = "923313943049";
-    const waUrl = `https://wa.me/${whatsappNumber}?text=${encoded}`;
-    window.open(waUrl, "_blank");
-  });
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle at 30% 10%, rgba(0,255,255,0.1), transparent 70%),
+              radial-gradient(circle at 70% 90%, rgba(162,0,255,0.1), transparent 70%);
+  z-index: -1;
 }
 
-// ✨ Sparkle animation on add
-function sparkleEffect() {
-  const sparkle = document.createElement("div");
-  sparkle.className = "sparkle";
-  sparkle.innerHTML = "✨";
-  Object.assign(sparkle.style, {
-    position: "fixed",
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    fontSize: "22px",
-    animation: "fadeSparkle 1.2s ease-out forwards",
-    pointerEvents: "none",
-    color: "gold",
-  });
-  document.body.appendChild(sparkle);
-  setTimeout(() => sparkle.remove(), 1200);
+/* --- MAIN CONTAINER --- */
+.container {
+  max-width: 950px;
+  margin: 40px auto;
+  padding: 35px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 25px;
+  box-shadow: 0 0 45px rgba(0, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: floatUp 0.8s ease-in-out;
 }
 
-// expose globally
-window.addToCart = addToCart;
-window.changeQuantity = changeQuantity;
-window.updateCart = updateCart;
+@keyframes floatUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- HEADER --- */
+header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.logo {
+  width: 95px;
+  border-radius: 50%;
+  box-shadow: 0 0 35px #00ffff88;
+  transition: 0.4s;
+}
+
+.logo:hover {
+  transform: scale(1.08) rotate(5deg);
+}
+
+h1 {
+  font-size: 2.4em;
+  color: #00fff2;
+  text-shadow: 0 0 25px #00ffffaa;
+  margin-top: 12px;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: #d9d9d9;
+  font-size: 1em;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+}
+
+/* --- SECTION TITLES --- */
+h2 {
+  color: #00fff2;
+  font-size: 1.6em;
+  border-left: 4px solid #00fff2;
+  padding-left: 10px;
+  margin: 25px 0 18px;
+  text-shadow: 0 0 15px #00ffffaa;
+}
+
+/* --- PRODUCT GRID --- */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.product {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 18px;
+  text-align: center;
+  transition: 0.4s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+}
+
+.product:hover {
+  border-color: #00fff2;
+  box-shadow: 0 0 25px #00fff280;
+  transform: translateY(-6px);
+}
+
+.product h3 {
+  font-size: 1.2em;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.product p {
+  color: #00fff2;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* --- ADD BUTTON --- */
+.add-btn {
+  background: linear-gradient(90deg, #00fff2, #0077ff);
+  border: none;
+  color: #fff;
+  padding: 9px 15px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  letter-spacing: 0.5px;
+}
+
+.add-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px #00ffffaa;
+}
+
+/* --- CART BOX --- */
+.cart {
+  position: fixed;
+  bottom: 20px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.78);
+  border: 1px solid #00fff2;
+  border-radius: 22px;
+  padding: 22px;
+  width: 290px;
+  max-height: 75vh;
+  overflow-y: auto;
+  box-shadow: 0 0 35px #00ffff55;
+  backdrop-filter: blur(12px);
+  z-index: 99;
+}
+
+.cart h3 {
+  text-align: center;
+  color: #00fff2;
+  margin-bottom: 10px;
+  text-shadow: 0 0 15px #00ffff99;
+}
+
+.cart ul {
+  list-style: none;
+  padding: 0;
+}
+
+.cart li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #ddd;
+}
+
+.quantity-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.quantity-controls button {
+  background: #00fff2;
+  border: none;
+  padding: 3px 7px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
+}
+
+/* --- TOTAL & ORDER --- */
+.total {
+  text-align: center;
+  color: #fff;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+#order-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: linear-gradient(90deg, #00fff2, #0077ff);
+  border: none;
+  color: #fff;
+  padding: 11px;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  letter-spacing: 0.5px;
+}
+
+#order-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #00ffffaa;
+}
+
+/* --- FOOTER --- */
+footer {
+  text-align: center;
+  color: #aaa;
+  font-size: 0.9em;
+  margin-top: 35px;
+  text-shadow: 0 0 10px #00ffff55;
+}
