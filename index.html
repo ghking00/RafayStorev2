@@ -10,6 +10,19 @@
   <!-- Hidden welcome audio -->
   <audio id="welcome-audio" src="assets/welcome.mp3" preload="auto"></audio>
 
+  <!-- 🌐 Social Floating Buttons -->
+  <div class="social-buttons">
+    <a href="https://www.instagram.com/rafay_subscription?igsh=MWhzaDU0ZW5oZ3pzcg==" 
+       class="social-btn insta" target="_blank">
+       <img src="assets/insta.png" alt="Instagram" />
+       <span>Follow on Instagram</span>
+    </a>
+    <a href="https://wa.me/923313943049" class="social-btn whatsapp" target="_blank">
+       <img src="assets/whatsapp.png" alt="WhatsApp" />
+       <span>Contact Now</span>
+    </a>
+  </div>
+
   <div class="container">
     <header>
       <img src="assets/background.jpg" alt="Logo" class="logo" />
@@ -121,7 +134,6 @@
       const audio = document.getElementById("welcome-audio");
       if (!sessionStorage.getItem("playedWelcome")) {
         audio.play().catch(() => {
-          // Fallback: auto play on first click if browser blocks it
           document.body.addEventListener("click", () => audio.play(), { once: true });
         });
         sessionStorage.setItem("playedWelcome", "true");
