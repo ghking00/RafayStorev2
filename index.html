@@ -5,29 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rafay Subscription Store</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Added Social Icon Styling (Perfect Fit) */
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .social-links a img {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .social-links a img:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px #ffd700a8;
+    }
+  </style>
 </head>
 <body>
   <!-- Hidden welcome audio -->
   <audio id="welcome-audio" src="assets/welcome.mp3" preload="auto"></audio>
-
-  <!-- 🌐 Social Floating Buttons -->
-  <div class="social-buttons">
-    <a href="https://www.instagram.com/rafay_subscription?igsh=MWhzaDU0ZW5oZ3pzcg==" 
-       class="social-btn insta" target="_blank">
-       <img src="assets/insta.png" alt="Instagram" />
-       <span>Follow on Instagram</span>
-    </a>
-    <a href="https://wa.me/923313943049" class="social-btn whatsapp" target="_blank">
-       <img src="assets/whatsapp.png" alt="WhatsApp" />
-       <span>Contact Now</span>
-    </a>
-  </div>
 
   <div class="container">
     <header>
       <img src="assets/background.jpg" alt="Logo" class="logo" />
       <h1>Rafay Subscription Store</h1>
       <p class="subtitle">Premium Digital Services & Subscriptions</p>
+
+      <!-- ✅ Added Instagram & WhatsApp Buttons -->
+      <div class="social-links">
+        <a href="https://www.instagram.com/rafay_subscription?igsh=MWhzaDU0ZW5oZ3pzcg==" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" />
+        </a>
+        <a href="https://wa.me/923313943049" target="_blank">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+        </a>
+      </div>
     </header>
 
     <main id="product-list">
