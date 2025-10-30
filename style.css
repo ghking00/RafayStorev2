@@ -1,237 +1,214 @@
-/* Reset & Base */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+// script.js - Rafay Subscription Store (Premium Visible Fireworks Edition)
+
+const cart = [];
+const cartList = document.getElementById("cart-items");
+const totalDisplay = document.getElementById("cart-total");
+const orderBtn = document.getElementById("order-btn");
+
+// ---------- LUXURY VISUALS SECTION (improved fireworks) ----------
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.createElement("canvas");
+  canvas.id = "fireworks";
+  Object.assign(canvas.style, {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    zIndex: "-1",
+    pointerEvents: "none",
+    background: "transparent",
+  });
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext("2d");
+  let fireworks = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  class Firework {
+    constructor(x, y, color) {
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.radius = 3.5; // bigger spark size
+      this.particles = Array.from({ length: 40 }, () => ({
+        x: x,
+        y: y,
+        angle: Math.random() * 2 * Math.PI,
+        speed: Math.random() * 5 + 1,
+        alpha: 1,
+      }));
+    }
+    draw() {
+      this.particles.forEach((p) => {
+        p.x += Math.cos(p.angle) * p.speed;
+        p.y += Math.sin(p.angle) * p.speed + 0.2;
+        p.alpha -= 0.01; // slower fade for visibility
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color}, ${p.alpha})`;
+        ctx.fill();
+      });
+    }
+  }
+
+  function animate() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.15)"; // trail effect
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    fireworks.forEach((f, i) => {
+      f.draw();
+      if (f.particles.every((p) => p.alpha <= 0)) fireworks.splice(i, 1);
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Random fireworks (more frequent & bright)
+  setInterval(() => {
+    for (let i = 0; i < 2; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.5;
+      const goldShade = 200 + Math.floor(Math.random() * 55);
+      const color = `${goldShade}, ${goldShade - 50}, 0`;
+      fireworks.push(new Firework(x, y, color));
+    }
+  }, 1500);
+});
+
+// ---------- CART LOGIC SECTION ----------
+function addToCart(name, price) {
+  const existing = cart.find((item) => item.name === name);
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({ name, price: Number(price), quantity: 1 });
+  }
+  updateCart();
+  sparkleEffect(); // ✨ visual sparkle when adding item
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  color: #fff;
-  background: #000;
-  min-height: 100vh;
-  overflow-x: hidden;
-  position: relative;
+document.querySelectorAll(".add-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const parent = btn.closest(".product");
+    if (!parent) return;
+    const name =
+      parent.dataset.name ||
+      parent.getAttribute("data-name") ||
+      parent.querySelector("h3")?.innerText ||
+      "Item";
+    const price =
+      parseInt(
+        parent.dataset.price || parent.getAttribute("data-price") || 0,
+        10
+      ) || 0;
+    addToCart(name, price);
+  });
+});
+
+function updateCart() {
+  if (!cartList) return;
+  cartList.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item, index) => {
+    total += item.price * item.quantity;
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span class="fade-in">${item.name}</span>
+      <div class="quantity-controls">
+        <button onclick="changeQuantity(${index}, -1)">−</button>
+        <span>${item.quantity}</span>
+        <button onclick="changeQuantity(${index}, 1)">+</button>
+      </div>
+    `;
+    cartList.appendChild(li);
+  });
+
+  if (totalDisplay) totalDisplay.textContent = total;
 }
 
-/* Background with depth & smooth lighting */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: url('https://i.postimg.cc/pdjM3ZpB/IMG-20250731-WA0227.jpg') center/cover no-repeat;
-  filter: brightness(0.25) blur(2px);
-  z-index: -2;
+function changeQuantity(index, change) {
+  if (!cart[index]) return;
+  cart[index].quantity += change;
+  if (cart[index].quantity <= 0) cart.splice(index, 1);
+  updateCart();
 }
 
-/* Fireworks Canvas Layer */
-#fireworks {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  pointer-events: none;
+if (orderBtn) {
+  orderBtn.addEventListener("click", () => {
+    if (cart.length === 0) {
+      alert("Please add at least one item to your cart.");
+      return;
+    }
+
+    let total = 0;
+    let lines = [];
+
+    cart.forEach((item, i) => {
+      lines.push(`${i + 1}️⃣ ${item.name} — ${item.price} Rs × ${item.quantity}`);
+      total += item.price * item.quantity;
+    });
+
+    const message = [
+      "💎✨ 𝗥𝗮𝗳𝗮𝘆 𝗦𝘂𝗯𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻 𝗦𝘁𝗼𝗿𝗲 — 𝗢𝗿𝗱𝗲𝗿 𝗗𝗲𝘁𝗮𝗶𝗹𝘀 🛍️ ✨💎",
+      "─────────────────────────────",
+      "🧾 Your Selected Items:",
+      ...lines,
+      "─────────────────────────────",
+      `💰 Total Amount: ₨ ${total}`,
+      "─────────────────────────────",
+      "",
+      "🌟 💳 Secure Payment Options 💳",
+      "👤 Account Title: Abdul Rafeh",
+      "",
+      "💠 Easypaisa: 0314 8396100 — Abdul Rafeh",
+      "💠 SadaPay: 0314 8396100 — Abdul Rafeh",
+      "💠 U Paisa: 0301 3555251 — Abdul Rafeh",
+      "💠 NayaPay: 0339 0116375 — Abdul Rafeh",
+      "💠 JazzCash: 0339 0116375 — Abdul Rafeh",
+      "💠 Zindagi: 0314 8396100 — Abdul Rafeh",
+      "",
+      "⚠️ Please send your payment screenshot after deposit for instant order activation.",
+      "─────────────────────────────",
+      "💻✨ For Premium Website Development:",
+      "📞 Contact: 0314-1495075",
+      "👩‍💻 Amna Rajpoot — Professional Developer & Ethical Hacker",
+      "─────────────────────────────",
+      "🚀 Thank you for choosing Rafay Subscription Store! We deliver trusted, fast, and secure services — always 💯✨",
+    ].join("\n");
+
+    const encoded = encodeURIComponent(message);
+    const whatsappNumber = "923313943049";
+    const waUrl = `https://wa.me/${whatsappNumber}?text=${encoded}`;
+    window.open(waUrl, "_blank");
+  });
 }
 
-/* Main Container */
-.container {
-  max-width: 950px;
-  margin: 25px auto;
-  background: rgba(10, 10, 20, 0.8);
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
-  backdrop-filter: blur(10px);
-  animation: fadeIn 1.2s ease-in-out;
+// ✨ Sparkle animation on add
+function sparkleEffect() {
+  const sparkle = document.createElement("div");
+  sparkle.className = "sparkle";
+  sparkle.innerHTML = "✨";
+  Object.assign(sparkle.style, {
+    position: "fixed",
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    fontSize: "22px",
+    animation: "fadeSparkle 1.2s ease-out forwards",
+    pointerEvents: "none",
+    color: "gold",
+  });
+  document.body.appendChild(sparkle);
+  setTimeout(() => sparkle.remove(), 1200);
 }
 
-/* Header */
-header {
-  text-align: center;
-  margin-bottom: 25px;
-  animation: slideDown 1s ease;
-}
-
-.logo {
-  width: 85px;
-  height: auto;
-  border-radius: 50%;
-  box-shadow: 0 0 20px #ffd700;
-}
-
-h1 {
-  font-size: 2.2em;
-  color: #ffd700;
-  text-shadow: 0 0 25px #ffb700;
-  margin-top: 10px;
-}
-
-.subtitle {
-  color: #ccc;
-  font-size: 0.9em;
-}
-
-/* Sections */
-section {
-  margin-bottom: 30px;
-  animation: fadeUp 1.2s ease;
-}
-
-h2 {
-  color: #ffd700;
-  font-size: 1.6em;
-  border-bottom: 2px solid #ffb700;
-  margin-bottom: 15px;
-  padding-bottom: 5px;
-}
-
-/* Product Grid */
-.products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 15px;
-}
-
-.product {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
-  transition: 0.4s;
-  border: 1px solid transparent;
-}
-
-.product:hover {
-  border-color: #ffd700;
-  box-shadow: 0 0 20px #ffd70077;
-  transform: translateY(-5px) scale(1.03);
-}
-
-.product h3 {
-  color: #fff;
-  font-size: 1.1em;
-  margin-bottom: 8px;
-}
-
-.product p {
-  color: #ffd700;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-/* Add Button */
-.add-btn {
-  background: linear-gradient(45deg, #ffd700, #ff8c00);
-  border: none;
-  color: #000;
-  padding: 8px 14px;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: 0.3s;
-  font-weight: bold;
-}
-
-.add-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px #ffd700aa;
-}
-
-/* Cart */
-.cart {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  background: rgba(20, 20, 30, 0.9);
-  border: 2px solid #ffd700;
-  padding: 20px;
-  border-radius: 20px;
-  width: 280px;
-  max-height: 70vh;
-  overflow-y: auto;
-  box-shadow: 0 0 25px #ffd70055;
-  z-index: 999;
-  animation: fadeUp 1.5s ease;
-}
-
-.cart h3 {
-  text-align: center;
-  color: #ffd700;
-  margin-bottom: 10px;
-}
-
-.cart li {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.quantity-controls {
-  display: flex;
-  gap: 5px;
-}
-
-.quantity-controls button {
-  background: #ffd700;
-  border: none;
-  padding: 2px 6px;
-  border-radius: 5px;
-  cursor: pointer;
-  color: #000;
-  font-weight: bold;
-}
-
-/* Total */
-.total {
-  text-align: center;
-  margin-top: 10px;
-  font-weight: bold;
-  color: #fff;
-}
-
-#order-btn {
-  width: 100%;
-  margin-top: 10px;
-  background: linear-gradient(45deg, #ffd700, #ff8c00);
-  border: none;
-  color: #000;
-  padding: 10px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-#order-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px #ffd70099;
-}
-
-/* Footer */
-footer {
-  text-align: center;
-  color: #ccc;
-  font-size: 0.85em;
-  margin-top: 25px;
-  padding-bottom: 10px;
-  text-shadow: 0 0 10px #ffd70044;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+// expose globally
+window.addToCart = addToCart;
+window.changeQuantity = changeQuantity;
+window.updateCart = updateCart;
