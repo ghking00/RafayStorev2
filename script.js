@@ -1,11 +1,31 @@
-// script.js - Rafay Subscription Store (premium + animation edition)
+// script.js - Rafay Subscription Store (premium + animation edition + welcome voice)
 
-const cart = [];
-const cartList = document.getElementById("cart-items");
-const totalDisplay = document.getElementById("cart-total");
-const orderBtn = document.getElementById("order-btn");
+// 🎧 Auto-play welcome voice once per website open
+document.addEventListener("DOMContentLoaded", () => {
+  const audio = document.getElementById("welcomeAudio");
+  if (audio && !sessionStorage.getItem("welcomePlayed")) {
+    const playAudio = () => {
+      audio.play().catch(() => {});
+      sessionStorage.setItem("welcomePlayed", "true");
+    };
 
-// ---------- LUXURY VISUALS SECTION (new) ----------
+    // Try autoplay
+    const attempt = audio.play();
+    if (attempt !== undefined) {
+      attempt
+        .then(() => {
+          sessionStorage.setItem("welcomePlayed", "true");
+        })
+        .catch(() => {
+          document.body.addEventListener("click", playAudio, { once: true });
+        });
+    } else {
+      document.body.addEventListener("click", playAudio, { once: true });
+    }
+  }
+});
+
+// ---------- LUXURY VISUALS SECTION ----------
 document.addEventListener("DOMContentLoaded", () => {
   // Background fireworks canvas
   const canvas = document.createElement("canvas");
@@ -16,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     left: 0,
     width: "100%",
     height: "100%",
-    zIndex: "-1",
+    zIndex: "-2", // ✅ lower so it never affects layout
     pointerEvents: "none",
     background: "transparent"
   });
@@ -38,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.color = color;
       this.radius = 2;
       this.alpha = 1;
-      this.particles = Array.from({ length: 25 }, () => ({
+      this.particles = Array.from({ length: 30 }, () => ({
         x: x,
         y: y,
         angle: Math.random() * 2 * Math.PI,
@@ -69,26 +89,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   animate();
 
-  // Random fireworks every few seconds
+  // Random fireworks
   setInterval(() => {
     const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height * 0.5;
-    const color = `255, ${Math.floor(Math.random() * 150 + 100)}, 0`; // gold tone
+    const y = Math.random() * canvas.height * 0.6;
+    const color = `${255}, ${Math.floor(Math.random() * 160 + 80)}, 0`; // gold
     fireworks.push(new Firework(x, y, color));
-  }, 2000);
+  }, 1500);
 });
 
-// ---------- CART LOGIC SECTION (your original) ----------
+// ---------- CART LOGIC ----------
+const cart = [];
+const cartList = document.getElementById("cart-items");
+const totalDisplay = document.getElementById("cart-total");
+const orderBtn = document.getElementById("order-btn");
 
 function addToCart(name, price) {
   const existing = cart.find(item => item.name === name);
-  if (existing) {
-    existing.quantity++;
-  } else {
-    cart.push({ name, price: Number(price), quantity: 1 });
-  }
+  if (existing) existing.quantity++;
+  else cart.push({ name, price: Number(price), quantity: 1 });
   updateCart();
-  sparkleEffect(); // ✨ add visual sparkle when adding item
+  sparkleEffect();
 }
 
 document.querySelectorAll(".add-btn").forEach(btn => {
@@ -171,7 +192,7 @@ if (orderBtn) {
       "📞 Contact: 0314-1495075",
       "👩‍💻 Amna Rajpoot — Professional Developer & Ethical Hacker",
       "─────────────────────────────",
-      "🚀 Thank you for choosing Rafay Subscription Store! We deliver trusted, fast, and secure services — always 💯✨"
+      "🚀 Thank you for choosing Rafay Subscription Store! 💯✨"
     ].join("\n");
 
     const encoded = encodeURIComponent(message);
